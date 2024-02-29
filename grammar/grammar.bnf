@@ -1,0 +1,22 @@
+<prog>		::= (<statement> | <S>)+
+<statement> ::= <fn> | <var> | <const> | <if> | <while> | <for>
+<if>			::= "if" <S>? "(" <S>? <exprno> <S>? ")" <S>? <block> <S>? (<elseif> | <else>)?
+<elseif>		::= "else" <S> <if>
+<else>		::= "else" <S>? <block>
+<while>		::= "while" <S>? "(" <S>? <exprno> <S>? ")" <S>? <block>
+<for>			::= "for" <S>? "(" <S>? (<S>? <expr> <S>? <expr> <S>? <exprno> <S>?)? <S>? ")" <S>? <block>
+<fn>			::= "def" <S> <ident> <S>? <arglist> <S>? ":" <S>? <type> <S>? <block>
+<arglist>	::= "(" <S>? (<arg> <S>? ("," <S>? <arg> <S>?)*)? <S>? ")"
+<arg>			::= <ident> <S>? ":" <S>? <type>
+<block>		::= "{" <S>? (<expr> | <ret> | <S>)* <S>? "}"
+<ret>			::= "return" <S> <expr>
+<var>			::= "var" <S> <ident> <S>? ":" <S>? <type> <S>? "=" <S>? <expr>
+<const>		::= "const" <S> <ident> <S>? ":" <S>? <type> <S>? "=" <S>? <expr>
+<expr>		::= (<num> | <ident>) <S>? (<binop> <S>? <exprno>)? <S>? ";"
+<exprno>		::= (<num> | <ident>) <S>? (<binop> <S>? <exprno>)?
+<binop>		::= "+" | "-" | "*" | "/" | "%" | "=="
+<prim>		::= "void" | "i32" | "u32" | "bool"
+<type>		::= <prim> | <ident>
+<num>			::= [0-9]+ ("." [0-9]+)?
+<ident>		::= ([A-Z] | [a-z] | "_")+ ("@" | "&" | "|")? ([0-9] | ("-" ([A-Z] | [a-z] | [0-9] | "_")+))* ([A-Z] | [a-z] | "_")* ("?" | "!")?
+<S>			::= (" " | "\n" | "\t" | "\r")+
