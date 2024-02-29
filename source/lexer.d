@@ -157,7 +157,7 @@ private Token doNum(ref Context ctx) {
 		tmp ~= ctx.currChar();
 		ctx.inc();
 	}
-	if (ctx.currChar() == '.') {
+	if (ctx.isChar('.')) {
 		isFloat = true;
 		tmp ~= ctx.currChar();
 		ctx.inc();
@@ -220,7 +220,7 @@ private Token doOther(ref Context ctx) {
 			tok = Token(TokenKind.Mod, tmp, line, col);
 			break;
 		case "=":
-			if (ctx.currChar() == '=') {
+			if (ctx.isChar('=')) {
 				tmp ~= ctx.currChar();
 				ctx.inc();
 				tok = Token(TokenKind.DEqu, tmp, line, col);
@@ -245,7 +245,7 @@ Token[] tokenize(ref string file) {
 		if (isWhite(ctx.currChar())) {
 			doWhite(ctx);
 		}
-		else if (isAlpha(ctx.currChar()) || ctx.currChar() == '_') {
+		else if (isAlpha(ctx.currChar()) || ctx.isChar('_')) {
 			res ~= doIdent(ctx);
 		}
 		else if (isDigit(ctx.currChar())) {
