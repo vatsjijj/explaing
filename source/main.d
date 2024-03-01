@@ -4,6 +4,7 @@ import std.string;
 import error;
 import lexer;
 import context;
+import parser;
 
 int main(string[] args) {
 	if (args.length < 2) {
@@ -22,6 +23,8 @@ int main(string[] args) {
 		Token[] toks = tokenize(gCtx);
 
 		gCtx.toks = toks;
+
+		Parser p = new Parser(gCtx);
 	}
 	catch (Exception e) {
 		stderr.writeln(e.message);
