@@ -25,6 +25,7 @@ int main(string[] args) {
 		gCtx.toks = toks;
 
 		Parser p = new Parser(gCtx);
+		p.parse();
 	}
 	catch (Exception e) {
 		stderr.writeln(e.message);
