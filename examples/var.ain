@@ -1,0 +1,2 @@
+var thing1: i32;
+var thing2: u32;
