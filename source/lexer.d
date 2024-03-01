@@ -237,7 +237,7 @@ private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 		default: {
 			tok = Token(TokenKind.Err, tmp, line, col);
 			Message msg = new Message(MessageKind.Error, "Invalid token.", tok);
-			msg.display(gCtx.lines, gCtx.filename);
+			msg.display(gCtx);
 			break;
 		}
 	}

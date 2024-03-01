@@ -5,6 +5,7 @@ import std.string;
 import core.stdc.stdlib : exit;
 import lexer;
 import color;
+import context;
 
 const string DRAW_HORIZONTAL = "─";
 const string DRAW_ANGLE      = "╭";
@@ -72,7 +73,7 @@ class Message {
 		}
 	}
 
-	void display(ref string[] lines, string filename) {
+	void display(ref GlobalContext gCtx) {
 		import std.conv : to;
 		ulong len = to!string(tok.line).length + 2;
 		string tmp;
@@ -80,11 +81,11 @@ class Message {
 		tmp ~= to!string(kind) ~ RESET ~ ":\n";
 		tmp ~= indent(len);
 		tmp ~= DRAW_TOP ~ "[" ~ FILENAME.toString();
-		tmp ~= filename ~ RESET ~ DIM ~ " | " ~ RESET;
+		tmp ~= gCtx.filename ~ RESET ~ DIM ~ " | " ~ RESET;
 		tmp ~= BOLD ~ to!string(tok.line) ~ RESET ~ DIM ~ ":";
 		tmp ~= RESET ~ BOLD ~ to!string(tok.col) ~ RESET ~ "]\n";
 		tmp ~= " " ~ DIM ~ to!string(tok.line) ~ RESET ~ " ";
-		tmp ~= DRAW_VERTICAL ~ " " ~ lines[tok.line - 1] ~ "\n";
+		tmp ~= DRAW_VERTICAL ~ " " ~ gCtx.lines[tok.line - 1] ~ "\n";
 		tmp ~= indent(len);
 		tmp ~= DRAW_DOT ~ " ";
 		tmp ~= kindColor();
