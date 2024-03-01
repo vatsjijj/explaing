@@ -122,6 +122,7 @@ final class NodeVar : NodeStatement {
 	private NodeType type;
 	private NodeExpression val;
 	private bool initialized;
+	private bool used = false;
 
 	this(NodeIdentifier ident, NodeType type) {
 		super(StatementKind.Var);
@@ -142,6 +143,7 @@ final class NodeConst : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
+	private bool used = false;
 
 	this(NodeIdentifier ident, NodeType type, NodeExpression val) {
 		super(StatementKind.Const);
