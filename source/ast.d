@@ -28,6 +28,7 @@ enum ExpressionKind {
 	Identifier,
 	BinOp,
 	Type,
+	Nil,
 }
 
 abstract class Node {
@@ -204,6 +205,16 @@ abstract class NodeExpression : Node {
 	this(ExpressionKind kind) {
 		super(NodeKind.Expression);
 		this.kind = kind;
+	}
+}
+
+// Holder for `nil`.
+final class NodeNil : NodeExpression {
+	private Token nil;
+
+	this(ref Token nil) {
+		super(ExpressionKind.Nil);
+		this.nil = nil;
 	}
 }
 

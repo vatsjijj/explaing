@@ -16,6 +16,7 @@ enum TokenKind {
 	If, Else,
 	While, For,
 	Return,
+	Nil,
 	// Binops
 	Mod, FSlash, Star,
 	Plus, Dash,
@@ -146,6 +147,9 @@ private Token doIdent(ref Context ctx) {
 			break;
 		case "true", "false":
 			tok = Token(TokenKind.Bool, tmp, line, col);
+			break;
+		case "nil":
+			tok = Token(TokenKind.Nil, tmp, line, col);
 			break;
 		default:
 			tok = Token(TokenKind.Identifier, tmp, line, col);
