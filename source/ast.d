@@ -38,7 +38,7 @@ abstract class Node {
 	}
 }
 
-class NodeProgram : Node {
+final class NodeProgram : Node {
 	private NodeStatement[] children;
 
 	this() {
@@ -47,6 +47,10 @@ class NodeProgram : Node {
 	this(NodeStatement[] children) {
 		super(NodeKind.Program);
 		this.children = children;
+	}
+
+	void append(NodeStatement node) {
+		this.children ~= node;
 	}
 }
 
@@ -59,7 +63,7 @@ abstract class NodeStatement : Node {
 	}
 }
 
-class NodeFunction : NodeStatement {
+final class NodeFunction : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeArgList args;
@@ -74,7 +78,7 @@ class NodeFunction : NodeStatement {
 	}
 }
 
-class NodeArgList : NodeStatement {
+final class NodeArgList : NodeStatement {
 	private NodeArg[] args;
 
 	this(NodeArg[] args) {
@@ -83,7 +87,7 @@ class NodeArgList : NodeStatement {
 	}
 }
 
-class NodeArg : NodeStatement {
+final class NodeArg : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 
@@ -94,7 +98,7 @@ class NodeArg : NodeStatement {
 	}
 }
 
-class NodeBlock : NodeStatement {
+final class NodeBlock : NodeStatement {
 	private Node[] children;
 
 	this(Node[] children) {
@@ -103,7 +107,7 @@ class NodeBlock : NodeStatement {
 	}
 }
 
-class NodeReturn : NodeStatement {
+final class NodeReturn : NodeStatement {
 	private NodeExpression expr;
 
 	this(NodeExpression expr) {
@@ -112,7 +116,7 @@ class NodeReturn : NodeStatement {
 	}
 }
 
-class NodeVar : NodeStatement {
+final class NodeVar : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
@@ -125,7 +129,7 @@ class NodeVar : NodeStatement {
 	}
 }
 
-class NodeConst : NodeStatement {
+final class NodeConst : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
@@ -138,7 +142,7 @@ class NodeConst : NodeStatement {
 	}
 }
 
-class NodeIf : NodeStatement {
+final class NodeIf : NodeStatement {
 	private NodeExpression condition;
 	private NodeBlock block;
 
@@ -149,7 +153,7 @@ class NodeIf : NodeStatement {
 	}
 }
 
-class NodeElseIf : NodeStatement {
+final class NodeElseIf : NodeStatement {
 	private NodeExpression condition;
 	private NodeBlock block;
 
@@ -160,7 +164,7 @@ class NodeElseIf : NodeStatement {
 	}
 }
 
-class NodeElse : NodeStatement {
+final class NodeElse : NodeStatement {
 	private NodeBlock block;
 
 	this(NodeBlock block) {
@@ -169,7 +173,7 @@ class NodeElse : NodeStatement {
 	}
 }
 
-class NodeWhile : NodeStatement {
+final class NodeWhile : NodeStatement {
 	private NodeExpression condition;
 	private NodeBlock block;
 
@@ -180,7 +184,7 @@ class NodeWhile : NodeStatement {
 	}
 }
 
-class NodeFor : NodeStatement {
+final class NodeFor : NodeStatement {
 	private NodeStatement stmt;
 	private NodeExpression expr1, expr2;
 	private NodeBlock block;
@@ -204,7 +208,7 @@ abstract class NodeExpression : Node {
 }
 
 // Simple holder for a token, used sparingly.
-class NodeNumber : NodeExpression {
+final class NodeNumber : NodeExpression {
 	private Token num;
 
 	this(ref Token num) {
@@ -214,7 +218,7 @@ class NodeNumber : NodeExpression {
 }
 
 // Basically a simple holder for a token.
-class NodeIdentifier : NodeExpression {
+final class NodeIdentifier : NodeExpression {
 	private Token ident;
 
 	this(ref Token ident) {
@@ -223,7 +227,8 @@ class NodeIdentifier : NodeExpression {
 	}
 }
 
-class NodeType : NodeExpression {
+// Also a holder.
+final class NodeType : NodeExpression {
 	private Token type;
 
 	this(ref Token type) {
@@ -232,7 +237,7 @@ class NodeType : NodeExpression {
 	}
 }
 
-class NodeBinOp : NodeExpression {
+final class NodeBinOp : NodeExpression {
 	private Token op;
 	private NodeExpression lhs, rhs;
 
