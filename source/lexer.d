@@ -41,6 +41,10 @@ struct Token {
 		this.len = content.length;
 	}
 
+	bool isKind(TokenKind kind) {
+		return this.kind == kind;
+	}
+
 	string toString() const @safe pure {
 		import std.conv : to;
 		string tmp;
