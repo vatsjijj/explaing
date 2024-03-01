@@ -258,5 +258,6 @@ Token[] tokenize(ref GlobalContext gCtx) {
 			res ~= doOther(ctx, gCtx);
 		}
 	}
+	res ~= Token(TokenKind.EOF, "EOF", ctx.line, ctx.col);
 	return res;
 }
