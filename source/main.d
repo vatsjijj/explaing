@@ -7,8 +7,9 @@ import context;
 
 int main(string[] args) {
 	if (args.length < 2) {
-		// TODO: Improve message.
 		stderr.writeln("Expected an argument.");
+		stderr.writeln("Usage:");
+		stderr.writeln("   ", args[0], " <input>");
 		return 1;
 	}
 
@@ -18,7 +19,6 @@ int main(string[] args) {
 
 		GlobalContext gCtx = GlobalContext(args[1], file, lines);
 		
-		// TODO: Make this more modular.
 		Token[] toks = tokenize(gCtx);
 
 		gCtx.toks = toks;
