@@ -3,6 +3,7 @@ import std.file;
 import std.string;
 import error;
 import lexer;
+import context;
 
 int main(string[] args) {
 	if (args.length < 2) {
@@ -14,8 +15,13 @@ int main(string[] args) {
 	try {
 		string file = args[1].readText();
 		string[] lines = file.splitLines();
+
+		GlobalContext gCtx = GlobalContext(args[1], file, lines);
 		
-		Token[] toks = tokenize(file);
+		// TODO: Make this more modular.
+		Token[] toks = tokenize(gCtx);
+
+		gCtx.toks = toks;
 	}
 	catch (Exception e) {
 		stderr.writeln(e.message);

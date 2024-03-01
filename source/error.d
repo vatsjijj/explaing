@@ -2,6 +2,7 @@ module error;
 
 import std.stdio;
 import std.string;
+import core.stdc.stdlib : exit;
 import lexer;
 import color;
 
@@ -31,13 +32,13 @@ class Message {
 	private const string message, note;
 	private Token tok;
 
-	this(MessageKind kind, string message, Token tok) {
+	this(MessageKind kind, string message, ref Token tok) {
 		this.kind = kind;
 		this.message = message;
 		this.tok = tok;
 		this.note = "";
 	}
-	this(MessageKind kind, string message, string note, Token tok) {
+	this(MessageKind kind, string message, string note, ref Token tok) {
 		this.kind = kind;
 		this.message = message;
 		this.tok = tok;
@@ -106,5 +107,6 @@ class Message {
 			tmp ~= note;
 		}
 		stderr.writeln(tmp);
+		exit(1);
 	}
 }

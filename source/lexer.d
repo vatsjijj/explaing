@@ -1,10 +1,13 @@
 module lexer;
 
 import std.ascii;
+import error;
+import context;
 
 enum TokenKind {
 	// Special
 	EOF,
+	Err,
 	Identifier,
 	Integer, Float, Bool,
 	Primitive,
@@ -148,7 +151,6 @@ private Token doIdent(ref Context ctx) {
 }
 
 private Token doNum(ref Context ctx) {
-	Token tok;
 	string tmp;
 	ulong line = ctx.line;
 	ulong col = ctx.col;
@@ -172,7 +174,7 @@ private Token doNum(ref Context ctx) {
 	return Token(TokenKind.Integer, tmp, line, col);
 }
 
-private Token doOther(ref Context ctx) {
+private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 	Token tok;
 	string tmp;
 	ulong line = ctx.line;
@@ -229,19 +231,20 @@ private Token doOther(ref Context ctx) {
 			tok = Token(TokenKind.Equ, tmp, line, col);
 			break;
 		default: {
-			import std.stdio;
-			stderr.writeln("TODO: OP ERR!");
+			tok = Token(TokenKind.Err, tmp, line, col);
+			Message msg = new Message(MessageKind.Error, "Invalid token.", tok);
+			msg.display(gCtx.lines, gCtx.filename);
 			break;
 		}
 	}
 	return tok;
 }
 
-Token[] tokenize(ref string file) {
-	Context ctx = Context(file);
+Token[] tokenize(ref GlobalContext gCtx) {
+	Context ctx = Context(gCtx.file);
 	Token[] res;
 
-	while (ctx.idx < file.length) {
+	while (ctx.idx < gCtx.file.length) {
 		if (isWhite(ctx.currChar())) {
 			doWhite(ctx);
 		}
@@ -252,7 +255,7 @@ Token[] tokenize(ref string file) {
 			res ~= doNum(ctx);
 		}
 		else {
-			res ~= doOther(ctx);
+			res ~= doOther(ctx, gCtx);
 		}
 	}
 	return res;
