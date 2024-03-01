@@ -121,12 +121,20 @@ final class NodeVar : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
+	private bool initialized;
 
+	this(NodeIdentifier ident, NodeType type) {
+		super(StatementKind.Var);
+		this.ident = ident;
+		this.type = type;
+		this.initialized = false;
+	}
 	this(NodeIdentifier ident, NodeType type, NodeExpression val) {
 		super(StatementKind.Var);
 		this.ident = ident;
 		this.type = type;
 		this.val = val;
+		this.initialized = true;
 	}
 }
 
