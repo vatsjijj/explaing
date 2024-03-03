@@ -114,6 +114,31 @@ final class Parser {
 
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression expr;
+		switch (curr().kind) {
+			case TokenKind.Nil: {
+				expr = new NodeNil(curr());
+				idx++;
+				break;
+			}
+			default: {
+				Message msg = new Message(
+					MessageKind.Error,
+					"Expected a valid expression.",
+					"Valid expressions are numbers, operations, or nil.",
+					curr()
+				);
+				msg.display(gCtx);
+				break;
+			}
+		}
+		if (semicolon) {
+			expect(
+				TokenKind.Semicolon,
+				"Expected a semicolon.",
+				"Lines delimit with semicolons."
+			);
+			idx++;
+		}
 		return expr;
 	}
 
