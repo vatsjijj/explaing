@@ -19,6 +19,10 @@ enum TokenKind {
 	Return,
 	Nil,
 	Pointer,
+	This, Super,
+	Class, Struct, Union,
+	Private, Protected, Public,
+	New,
 	// Binops
 	Mod, FSlash, Star,
 	Plus, Dash,
@@ -28,7 +32,7 @@ enum TokenKind {
 	LBrace, RBrace,
 	LBrack, RBrack,
 	Semicolon, Colon,
-	Comma,
+	Comma, Dot,
 }
 
 struct Token {
@@ -165,6 +169,33 @@ private Token doIdent(ref Context ctx) {
 		case "ptr":
 			tok = Token(TokenKind.Pointer, tmp, line, col);
 			break;
+		case "this":
+			tok = Token(TokenKind.This, tmp, line, col);
+			break;
+		case "super":
+			tok = Token(TokenKind.Super, tmp, line, col);
+			break;
+		case "class":
+			tok = Token(TokenKind.Class, tmp, line, col);
+			break;
+		case "struct":
+			tok = Token(TokenKind.Struct, tmp, line, col);
+			break;
+		case "union":
+			tok = Token(TokenKind.Union, tmp, line, col);
+			break;
+		case "private":
+			tok = Token(TokenKind.Private, tmp, line, col);
+			break;
+		case "protected":
+			tok = Token(TokenKind.Protected, tmp, line, col);
+			break;
+		case "public":
+			tok = Token(TokenKind.Public, tmp, line, col);
+			break;
+		case "new":
+			tok = Token(TokenKind.New, tmp, line, col);
+			break;
 		default:
 			tok = Token(TokenKind.Identifier, tmp, line, col);
 			break;
@@ -273,6 +304,9 @@ private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 			break;
 		case ",":
 			tok = Token(TokenKind.Comma, tmp, line, col);
+			break;
+		case ".":
+			tok = Token(TokenKind.Dot, tmp, line, col);
 			break;
 		case "=":
 			if (ctx.isChar('=')) {

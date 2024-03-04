@@ -99,7 +99,7 @@ final class Parser {
 		tmp.display(gCtx);
 	}
 
-	private NodeVar parseVar() {
+	private NodeVar parseVar(Visibility vis) {
 		idx++;
 		expect(
 			TokenKind.Identifier,
@@ -118,7 +118,7 @@ final class Parser {
 		if (curr().isKind(TokenKind.Equ)) {
 			idx++;
 			NodeExpression expr = parseExpression(true);
-			return new NodeVar(ident, type, expr);
+			return new NodeVar(ident, type, expr, vis);
 		}
 		expect(
 			TokenKind.Semicolon,
@@ -126,10 +126,10 @@ final class Parser {
 			"Semicolons delimit lines."
 		);
 		idx++;
-		return new NodeVar(ident, type);
+		return new NodeVar(ident, type, vis);
 	}
 
-	private NodeConst parseConstant() {
+	private NodeConst parseConstant(Visibility vis) {
 		idx++;
 		expect(
 			TokenKind.Identifier,
@@ -148,7 +148,7 @@ final class Parser {
 		if (curr().isKind(TokenKind.Equ)) {
 			idx++;
 			NodeExpression expr = parseExpression(true);
-			return new NodeConst(ident, type, expr);
+			return new NodeConst(ident, type, expr, vis);
 		}
 		expect(
 			TokenKind.Semicolon,
@@ -156,7 +156,7 @@ final class Parser {
 			"Semicolons delimit lines."
 		);
 		idx++;
-		return new NodeConst(ident, type);
+		return new NodeConst(ident, type, vis);
 	}
 
 	private NodeExprList parseExprList() {
@@ -219,6 +219,11 @@ final class Parser {
 		Token op;
 		bool binop = false;
 		switch (curr().kind) {
+			case TokenKind.This: {
+				lhs = new NodeThis(curr());
+				idx++;
+				break;
+			}
 			case TokenKind.Nil: {
 				lhs = new NodeNil(curr());
 				idx++;
@@ -243,6 +248,13 @@ final class Parser {
 				idx++;
 				break;
 			}
+			case TokenKind.Super: {
+				Token tok = curr();
+				idx++;
+				NodeExprList args = parseExprList();
+				lhs = new NodeSuper(tok, args);
+				break;
+			}
 			case TokenKind.String: {
 				lhs = new NodeString(curr());
 				idx++;
@@ -262,7 +274,8 @@ final class Parser {
 		if (curr().isKind(
 			TokenKind.Plus, TokenKind.Dash,
 			TokenKind.Star, TokenKind.FSlash,
-			TokenKind.Mod, TokenKind.DEqu
+			TokenKind.Mod, TokenKind.DEqu,
+			TokenKind.Dot, TokenKind.Equ
 		)) {
 			op = curr();
 			idx++;
@@ -341,6 +354,12 @@ final class Parser {
 				case TokenKind.Var, TokenKind.Const, TokenKind.Def:
 					children ~= parseStatement();
 					break;
+				case TokenKind.Class, TokenKind.Struct, TokenKind.Union:
+					children ~= parseStatement();
+					break;
+				case TokenKind.Private, TokenKind.Protected, TokenKind.Public:
+					children ~= parseStatement();
+					break;
 				case TokenKind.Return:
 					children ~= parseReturn();
 					break;
@@ -354,7 +373,7 @@ final class Parser {
 	}
 
 	// TODO: Add notes!
-	private NodeFunction parseFunction() {
+	private NodeFunction parseFunction(Visibility vis) {
 		idx++;
 		expect(
 			TokenKind.Identifier,
@@ -371,22 +390,54 @@ final class Parser {
 		idx++;
 		NodeType type = parseType();
 		NodeBlock block = parseBlock();
-		return new NodeFunction(ident, type, args, block);
+		return new NodeFunction(ident, type, args, block, vis);
+	}
+
+	// TODO: Add notes.
+	private NodeClass parseClass(Visibility vis) {
+		idx++;
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		NodeBlock block = parseBlock();
+		return new NodeClass(ident, block, vis);
 	}
 
 	private NodeStatement parseStatement() {
 		NodeStatement statement;
+		Visibility vis = Visibility.Protected;
+		switch (curr().kind) {
+			case TokenKind.Private:
+				vis = Visibility.Private;
+				idx++;
+				break;
+			case TokenKind.Protected:
+				idx++;
+				break;
+			case TokenKind.Public:
+				vis = Visibility.Public;
+				idx++;
+				break;
+			default: break;
+		}
 		switch (curr().kind) {
 			case TokenKind.Var: {
-				statement = parseVar();
+				statement = parseVar(vis);
 				break;
 			}
 			case TokenKind.Const: {
-				statement = parseConstant();
+				statement = parseConstant(vis);
 				break;
 			}
 			case TokenKind.Def: {
-				statement = parseFunction();
+				statement = parseFunction(vis);
+				break;
+			}
+			case TokenKind.Class: {
+				statement = parseClass(vis);
 				break;
 			}
 			// Error!

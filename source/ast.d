@@ -16,6 +16,9 @@ enum StatementKind {
 	Return,
 	Var,
 	Const,
+	Class,
+	Struct,
+	Union,
 	If,
 	ElseIf,
 	Else,
@@ -33,6 +36,7 @@ enum ExpressionKind {
 	Call,
 	ExprList,
 	String,
+	This, Super,
 }
 
 abstract class Node {
@@ -68,7 +72,68 @@ abstract class NodeStatement : Node {
 	}
 }
 
+enum Visibility {
+	Private,
+	Protected,
+	Public,
+}
+
+final class NodeClass : NodeStatement {
+	private Visibility vis = Visibility.Protected;
+	private NodeIdentifier ident;
+	private NodeBlock block;
+
+	this(NodeIdentifier ident, NodeBlock block) {
+		super(StatementKind.Class);
+		this.ident = ident;
+		this.block = block;
+	}
+	this(NodeIdentifier ident, NodeBlock block, Visibility vis) {
+		super(StatementKind.Class);
+		this.ident = ident;
+		this.block = block;
+		this.vis = vis;
+	}
+}
+
+final class NodeStruct : NodeStatement {
+	private Visibility vis = Visibility.Protected;
+	private NodeIdentifier ident;
+	private NodeBlock block;
+
+	this(NodeIdentifier ident, NodeBlock block) {
+		super(StatementKind.Struct);
+		this.ident = ident;
+		this.block = block;
+	}
+	this(NodeIdentifier ident, NodeBlock block, Visibility vis) {
+		super(StatementKind.Struct);
+		this.ident = ident;
+		this.block = block;
+		this.vis = vis;
+	}
+}
+
+final class NodeUnion : NodeStatement {
+	private Visibility vis = Visibility.Protected;
+	private NodeIdentifier ident;
+	private NodeBlock block;
+
+	this(NodeIdentifier ident, NodeBlock block) {
+		super(StatementKind.Union);
+		this.ident = ident;
+		this.block = block;
+	}
+	this(NodeIdentifier ident, NodeBlock block, Visibility vis) {
+		super(StatementKind.Union);
+		this.ident = ident;
+		this.block = block;
+		this.vis = vis;
+	}
+}
+
 final class NodeFunction : NodeStatement {
+	private Visibility vis = Visibility.Protected;
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeArgList args;
@@ -80,6 +145,14 @@ final class NodeFunction : NodeStatement {
 		this.type = type;
 		this.args = args;
 		this.block = block;
+	}
+	this(NodeIdentifier ident, NodeType type, NodeArgList args, NodeBlock block, Visibility vis) {
+		super(StatementKind.Function);
+		this.ident = ident;
+		this.type = type;
+		this.args = args;
+		this.block = block;
+		this.vis = vis;
 	}
 }
 
@@ -126,6 +199,7 @@ final class NodeReturn : NodeStatement {
 }
 
 final class NodeVar : NodeStatement {
+	private Visibility vis = Visibility.Protected;
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
@@ -144,10 +218,26 @@ final class NodeVar : NodeStatement {
 		this.type = type;
 		this.val = val;
 		this.initialized = true;
+	}
+	this(NodeIdentifier ident, NodeType type, Visibility vis) {
+		super(StatementKind.Var);
+		this.ident = ident;
+		this.type = type;
+		this.initialized = false;
+		this.vis = vis;
+	}
+	this(NodeIdentifier ident, NodeType type, NodeExpression val, Visibility vis) {
+		super(StatementKind.Var);
+		this.ident = ident;
+		this.type = type;
+		this.val = val;
+		this.initialized = true;
+		this.vis = vis;
 	}
 }
 
 final class NodeConst : NodeStatement {
+	private Visibility vis = Visibility.Protected;
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
@@ -167,6 +257,22 @@ final class NodeConst : NodeStatement {
 		this.type = type;
 		this.val = val;
 		this.initialized = true;
+	}
+	this(NodeIdentifier ident, NodeType type, Visibility vis) {
+		super(StatementKind.Const);
+		this.ident = ident;
+		this.type = type;
+		this.val = val;
+		this.initialized = false;
+		this.vis = vis;
+	}
+	this(NodeIdentifier ident, NodeType type, NodeExpression val, Visibility vis) {
+		super(StatementKind.Const);
+		this.ident = ident;
+		this.type = type;
+		this.val = val;
+		this.initialized = true;
+		this.vis = vis;
 	}
 }
 
@@ -324,6 +430,26 @@ final class NodeCall : NodeExpression {
 	this(ref Token ident, NodeExprList args) {
 		super(ExpressionKind.Call);
 		this.ident = ident;
+		this.args = args;
+	}
+}
+
+final class NodeThis : NodeExpression {
+	private Token item;
+
+	this(ref Token item) {
+		super(ExpressionKind.This);
+		this.item = item;
+	}
+}
+
+final class NodeSuper : NodeExpression {
+	private Token item;
+	private NodeExprList args;
+
+	this(ref Token item, NodeExprList args) {
+		super(ExpressionKind.Super);
+		this.item = item;
 		this.args = args;
 	}
 }

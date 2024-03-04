@@ -1,0 +1,9 @@
+public class Point {
+	private var x: i32;
+	private var y: i32;
+
+	public def self(x: i32, y: i32): void {
+		this.x = x;
+		this.y = y;
+	}
+}
