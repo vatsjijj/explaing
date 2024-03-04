@@ -144,13 +144,22 @@ final class NodeConst : NodeStatement {
 	private NodeIdentifier ident;
 	private NodeType type;
 	private NodeExpression val;
+	private bool initialized;
 	private bool used = false;
 
+	this(NodeIdentifier ident, NodeType type) {
+		super(StatementKind.Const);
+		this.ident = ident;
+		this.type = type;
+		this.val = val;
+		this.initialized = false;
+	}
 	this(NodeIdentifier ident, NodeType type, NodeExpression val) {
 		super(StatementKind.Const);
 		this.ident = ident;
 		this.type = type;
 		this.val = val;
+		this.initialized = true;
 	}
 }
 

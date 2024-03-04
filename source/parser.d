@@ -112,6 +112,42 @@ final class Parser {
 		return new NodeVar(ident, type);
 	}
 
+	private NodeVar parseConstant() {
+		idx++;
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier.",
+			"Identifiers start with a letter or an underscore."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		expect(
+			TokenKind.Colon,
+			"Expected a colon.",
+			"Colons are required for definitions."
+		);
+		idx++;
+		expect(
+			TokenKind.Primitive, TokenKind.Identifier,
+			"Expected a primitive type or identifier.",
+			"Ensure that this is a valid identifier or primitive type."
+		);
+		NodeType type = new NodeType(curr());
+		idx++;
+		if (curr().isKind(TokenKind.Equ)) {
+			idx++;
+			NodeExpression expr = parseExpression(true);
+			return new NodeConst(ident, type, expr);
+		}
+		expect(
+			TokenKind.Semicolon,
+			"Expected a semicolon.",
+			"Semicolons delimit lines."
+		);
+		idx++;
+		return new NodeConst(ident, type);
+	}
+
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression lhs, rhs;
 		Token op;
@@ -169,6 +205,10 @@ final class Parser {
 		switch (curr().kind) {
 			case TokenKind.Var: {
 				statement = parseVar();
+				break;
+			}
+			case TokenKind.Const: {
+				statement = parseConstant();
 				break;
 			}
 			// Error!
