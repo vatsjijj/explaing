@@ -196,6 +196,34 @@ private Token doNum(ref Context ctx) {
 	return Token(TokenKind.Integer, tmp, line, col);
 }
 
+private void doComment(ref Context ctx) {
+	import std.stdio;
+	if (ctx.isChar('-')) {
+		while (!ctx.isChar('\n')) {
+			writeln(ctx.currChar());
+			ctx.inc();
+		}
+	}
+	else if (ctx.isChar('+')) {
+		ctx.inc();
+		while (ctx.currChar() != '+' && ctx.peek() != '-') {
+			if (ctx.currChar() == '\n') {
+				ctx.col = 1;
+				ctx.line++;
+				ctx.idx++;
+			}
+			else if (ctx.currChar() == '+' && ctx.peek() == '-') {
+				doComment(ctx);
+			}
+			else {
+				ctx.inc();
+			}
+		}
+		ctx.inc();
+		ctx.inc();
+	}
+}
+
 private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 	Token tok;
 	string tmp;
@@ -298,6 +326,10 @@ Token[] tokenize(ref GlobalContext gCtx) {
 	while (ctx.idx < gCtx.file.length) {
 		if (isWhite(ctx.currChar())) {
 			doWhite(ctx);
+		}
+		else if (ctx.isChar('-') && (ctx.peek() == '-' || ctx.peek() == '+')) {
+			ctx.inc();
+			doComment(ctx);
 		}
 		else if (ctx.isChar('"')) {
 			res ~= doString(ctx);

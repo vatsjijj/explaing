@@ -1,3 +1,4 @@
+-- Checks if the number is even.
 def even?(num: i32): bool {
    return num % 2 == 0;
 }
