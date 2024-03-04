@@ -11,12 +11,14 @@ enum TokenKind {
 	Identifier,
 	Integer, Float, Bool,
 	Primitive,
+	String,
 	// Keywords
 	Def, Var, Const,
 	If, Else,
 	While, For,
 	Return,
 	Nil,
+	Pointer,
 	// Binops
 	Mod, FSlash, Star,
 	Plus, Dash,
@@ -85,6 +87,12 @@ private struct Context {
 	bool isChar(char ch) {
 		return currChar() == ch;
 	}
+	bool isChar(char[] chs...) {
+		foreach (ch; chs) {
+			if (currChar() == ch) return true;
+		}
+		return false;
+	}
 
 	char peek(ulong amt = 1) {
 		return file[idx + amt];
@@ -111,20 +119,17 @@ private Token doIdent(ref Context ctx) {
 	ulong col = ctx.col;
 	while (
 		isAlphaNum(ctx.currChar())
-		|| ctx.isChar('_')
-		|| ctx.isChar('-')
-		|| ctx.isChar('@')
-		|| ctx.isChar('&')
-		|| ctx.isChar('|')
-		|| ctx.isChar('?')
-		|| ctx.isChar('!') 
-		|| ctx.isChar('\'')
+		|| ctx.isChar(
+			'_', '-', '@', '&',
+			'|', '?', '!', '\'',
+			'`'
+		)
 	) {
 		tmp ~= ctx.currChar();
 		ctx.inc();
 	}
 	switch (tmp) {
-		case "void", "i32", "u32", "f32", "bool":
+		case "void", "u8", "i8", "i32", "u32", "f32", "bool":
 			tok = Token(TokenKind.Primitive, tmp, line, col);
 			break;
 		case "if":
@@ -156,6 +161,9 @@ private Token doIdent(ref Context ctx) {
 			break;
 		case "nil":
 			tok = Token(TokenKind.Nil, tmp, line, col);
+			break;
+		case "ptr":
+			tok = Token(TokenKind.Pointer, tmp, line, col);
 			break;
 		default:
 			tok = Token(TokenKind.Identifier, tmp, line, col);
@@ -257,6 +265,32 @@ private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 	return tok;
 }
 
+private Token doString(ref Context ctx) {
+	ulong line = ctx.line;
+	ulong col = ctx.col;
+	string tmp;
+	tmp ~= ctx.currChar();
+	ctx.inc();
+	while (!ctx.isChar('"', '\n', '\r')) {
+		if (ctx.isChar('\\')) {
+			tmp ~= ctx.currChar();
+			ctx.inc();
+			if (ctx.isChar(
+				'\\', '"', 'n', 'r', 't', 'b', 'v', 'a'
+			)) {
+				tmp ~= ctx.currChar();
+			}
+		}
+		else {
+			tmp ~= ctx.currChar();
+		}
+		ctx.inc();
+	}
+	tmp ~= ctx.currChar();
+	ctx.inc();
+	return Token(TokenKind.String, tmp, line, col);
+}
+
 Token[] tokenize(ref GlobalContext gCtx) {
 	Context ctx = Context(gCtx.file);
 	Token[] res;
@@ -264,6 +298,9 @@ Token[] tokenize(ref GlobalContext gCtx) {
 	while (ctx.idx < gCtx.file.length) {
 		if (isWhite(ctx.currChar())) {
 			doWhite(ctx);
+		}
+		else if (ctx.isChar('"')) {
+			res ~= doString(ctx);
 		}
 		else if (isAlpha(ctx.currChar()) || ctx.isChar('_')) {
 			res ~= doIdent(ctx);

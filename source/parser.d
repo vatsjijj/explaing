@@ -114,13 +114,7 @@ final class Parser {
 			"Colons are required for definitions."
 		);
 		idx++;
-		expect(
-			TokenKind.Primitive, TokenKind.Identifier,
-			"Expected a primitive type or identifier.",
-			"Ensure that this is a valid identifier or primitive type."
-		);
-		NodeType type = new NodeType(curr());
-		idx++;
+		NodeType type = parseType();
 		if (curr().isKind(TokenKind.Equ)) {
 			idx++;
 			NodeExpression expr = parseExpression(true);
@@ -150,13 +144,7 @@ final class Parser {
 			"Colons are required for definitions."
 		);
 		idx++;
-		expect(
-			TokenKind.Primitive, TokenKind.Identifier,
-			"Expected a primitive type or identifier.",
-			"Ensure that this is a valid identifier or primitive type."
-		);
-		NodeType type = new NodeType(curr());
-		idx++;
+		NodeType type = parseType();
 		if (curr().isKind(TokenKind.Equ)) {
 			idx++;
 			NodeExpression expr = parseExpression(true);
@@ -202,6 +190,30 @@ final class Parser {
 		return new NodeCall(ident, args);
 	}
 
+	private NodeType parseType() {
+		Token[] type;
+		switch (curr().kind) {
+			case TokenKind.Const:
+				type ~= curr();
+				idx++;
+				break;
+			default: break;
+		}
+		expect(
+			TokenKind.Primitive, TokenKind.Identifier,
+			"Expected a type."
+		);
+		type ~= curr();
+		idx++;
+		while (curr().isKind(
+			TokenKind.Pointer
+		)) {
+			type ~= curr();
+			idx++;
+		}
+		return new NodeType(type);
+	}
+
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression lhs, rhs;
 		Token op;
@@ -231,11 +243,16 @@ final class Parser {
 				idx++;
 				break;
 			}
+			case TokenKind.String: {
+				lhs = new NodeString(curr());
+				idx++;
+				break;
+			}
 			default: {
 				Message msg = new Message(
 					MessageKind.Error,
 					"Expected a valid expression.",
-					"Valid expressions are numbers, operations, or nil.",
+					"Valid expressions are numbers, operations, strings, or nil.",
 					curr()
 				);
 				msg.display(gCtx);
@@ -276,12 +293,7 @@ final class Parser {
 			"Expected a colon."
 		);
 		idx++;
-		expect(
-			TokenKind.Primitive, TokenKind.Identifier,
-			"Expected a type."
-		);
-		NodeType type = new NodeType(curr());
-		idx++;
+		NodeType type = parseType();
 		return new NodeArg(ident, type);
 	}
 
@@ -357,12 +369,7 @@ final class Parser {
 			"Expected a colon."
 		);
 		idx++;
-		expect(
-			TokenKind.Primitive, TokenKind.Identifier,
-			"Expected a type."
-		);
-		NodeType type = new NodeType(curr());
-		idx++;
+		NodeType type = parseType();
 		NodeBlock block = parseBlock();
 		return new NodeFunction(ident, type, args, block);
 	}

@@ -32,6 +32,7 @@ enum ExpressionKind {
 	Nil,
 	Call,
 	ExprList,
+	String,
 }
 
 abstract class Node {
@@ -264,11 +265,10 @@ final class NodeIdentifier : NodeExpression {
 	}
 }
 
-// Also a holder.
 final class NodeType : NodeExpression {
-	private Token type;
+	private Token[] type;
 
-	this(ref Token type) {
+	this(Token[] type) {
 		super(ExpressionKind.Type);
 		this.type = type;
 	}
@@ -279,6 +279,15 @@ final class NodeBool : NodeExpression {
 
 	this(ref Token val) {
 		super(ExpressionKind.Bool);
+		this.val = val;
+	}
+}
+
+final class NodeString : NodeExpression {
+	private Token val;
+
+	this(ref Token val) {
+		super(ExpressionKind.String);
 		this.val = val;
 	}
 }
