@@ -338,7 +338,7 @@ final class Parser {
 		idx++;
 		while (!curr().isKind(TokenKind.RBrace)) {
 			switch (curr().kind) {
-				case TokenKind.Var, TokenKind.Const:
+				case TokenKind.Var, TokenKind.Const, TokenKind.Def:
 					children ~= parseStatement();
 					break;
 				case TokenKind.Return:
