@@ -113,10 +113,22 @@ final class Parser {
 	}
 
 	private NodeExpression parseExpression(bool semicolon = false) {
-		NodeExpression expr;
+		NodeExpression lhs, rhs;
+		Token op;
+		bool binop = false;
 		switch (curr().kind) {
 			case TokenKind.Nil: {
-				expr = new NodeNil(curr());
+				lhs = new NodeNil(curr());
+				idx++;
+				break;
+			}
+			case TokenKind.Integer, TokenKind.Float: {
+				lhs = new NodeNumber(curr());
+				idx++;
+				break;
+			}
+			case TokenKind.Bool: {
+				lhs = new NodeBool(curr());
 				idx++;
 				break;
 			}
@@ -131,6 +143,16 @@ final class Parser {
 				break;
 			}
 		}
+		if (curr().isKind(
+			TokenKind.Plus, TokenKind.Dash,
+			TokenKind.Star, TokenKind.FSlash,
+			TokenKind.Mod, TokenKind.DEqu
+		)) {
+			op = curr();
+			idx++;
+			rhs = parseExpression();
+			binop = true;
+		}
 		if (semicolon) {
 			expect(
 				TokenKind.Semicolon,
@@ -139,7 +161,7 @@ final class Parser {
 			);
 			idx++;
 		}
-		return expr;
+		return binop ? new NodeBinOp(lhs, op, rhs) : lhs;
 	}
 
 	private NodeStatement parseStatement() {

@@ -45,6 +45,12 @@ struct Token {
 	bool isKind(TokenKind kind) {
 		return this.kind == kind;
 	}
+	bool isKind(TokenKind[] kinds...) {
+		foreach (kind; kinds) {
+			if (kind == this.kind) return true;
+		}
+		return false;
+	}
 
 	string toString() const @safe pure {
 		import std.conv : to;
@@ -118,7 +124,7 @@ private Token doIdent(ref Context ctx) {
 		ctx.inc();
 	}
 	switch (tmp) {
-		case "void", "i32", "u32", "bool":
+		case "void", "i32", "u32", "f32", "bool":
 			tok = Token(TokenKind.Primitive, tmp, line, col);
 			break;
 		case "if":

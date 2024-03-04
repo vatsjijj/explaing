@@ -28,6 +28,7 @@ enum ExpressionKind {
 	Identifier,
 	BinOp,
 	Type,
+	Bool,
 	Nil,
 }
 
@@ -255,6 +256,15 @@ final class NodeType : NodeExpression {
 	this(ref Token type) {
 		super(ExpressionKind.Type);
 		this.type = type;
+	}
+}
+
+final class NodeBool : NodeExpression {
+	private Token val;
+
+	this(ref Token val) {
+		super(ExpressionKind.Bool);
+		this.val = val;
 	}
 }
 
