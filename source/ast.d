@@ -83,6 +83,10 @@ final class NodeFunction : NodeStatement {
 final class NodeArgList : NodeStatement {
 	private NodeArg[] args;
 
+	this() {
+		super(StatementKind.ArgList);
+		this.args = [];
+	}
 	this(NodeArg[] args) {
 		super(StatementKind.ArgList);
 		this.args = args;

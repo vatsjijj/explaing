@@ -75,6 +75,29 @@ final class Parser {
 			return;
 		}
 	}
+	private void expect(string msg, ulong amt, TokenKind[] kinds...) {
+		foreach (kind; kinds) {
+			if (peek(amt).isKind(kind)) return;
+		}
+		Message tmp = new Message(
+			MessageKind.Error,
+			msg,
+			peek(amt)
+		);
+		tmp.display(gCtx);
+	}
+	private void expect(string msg, string note, ulong amt, TokenKind[] kinds...) {
+		foreach (kind; kinds) {
+			if (peek(amt).isKind(kind)) return;
+		}
+		Message tmp = new Message(
+			MessageKind.Error,
+			msg,
+			note,
+			peek(amt)
+		);
+		tmp.display(gCtx);
+	}
 
 	private NodeVar parseVar() {
 		idx++;
@@ -112,7 +135,7 @@ final class Parser {
 		return new NodeVar(ident, type);
 	}
 
-	private NodeVar parseConstant() {
+	private NodeConst parseConstant() {
 		idx++;
 		expect(
 			TokenKind.Identifier,
@@ -200,6 +223,110 @@ final class Parser {
 		return binop ? new NodeBinOp(lhs, op, rhs) : lhs;
 	}
 
+	// TODO: Add notes!
+	private NodeArg parseArg() {
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		expect(
+			TokenKind.Colon,
+			"Expected a colon."
+		);
+		idx++;
+		expect(
+			TokenKind.Primitive, TokenKind.Identifier,
+			"Expected a type."
+		);
+		NodeType type = new NodeType(curr());
+		idx++;
+		return new NodeArg(ident, type);
+	}
+
+	// TODO: Add notes!
+	private NodeArgList parseArgList() {
+		NodeArg[] args;
+		expect(
+			TokenKind.LParen,
+			"Expected a left parenthese."
+		);
+		idx++;
+		if (curr().isKind(TokenKind.RParen)) {
+			idx++;
+			return new NodeArgList();
+		}
+		args ~= parseArg();
+		while (curr().isKind(TokenKind.Comma)) {
+			idx++;
+			args ~= parseArg();
+		}
+		expect(
+			TokenKind.RParen,
+			"Expected a right parenthese."
+		);
+		idx++;
+		return new NodeArgList(args);
+	}
+
+	private NodeReturn parseReturn() {
+		idx++;
+		NodeExpression expr = parseExpression(true);
+		return new NodeReturn(expr);
+	}
+
+	// TODO: Add notes!
+	private NodeBlock parseBlock() {
+		Node[] children;
+		expect(
+			TokenKind.LBrace,
+			"Expected a left brace."
+		);
+		idx++;
+		while (!curr().isKind(TokenKind.RBrace)) {
+			switch (curr().kind) {
+				case TokenKind.Var, TokenKind.Const:
+					children ~= parseStatement();
+					break;
+				case TokenKind.Return:
+					children ~= parseReturn();
+					break;
+				default:
+					children ~= parseExpression(true);
+					break;
+			}
+		}
+		idx++;
+		return new NodeBlock(children);
+	}
+
+	// TODO: Add notes!
+	private NodeFunction parseFunction() {
+		idx++;
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier.",
+			"Ensure a valid identifier is after `def`."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		NodeArgList args = parseArgList();
+		expect(
+			TokenKind.Colon,
+			"Expected a colon."
+		);
+		idx++;
+		expect(
+			TokenKind.Primitive, TokenKind.Identifier,
+			"Expected a type."
+		);
+		NodeType type = new NodeType(curr());
+		idx++;
+		NodeBlock block = parseBlock();
+		return new NodeFunction(ident, type, args, block);
+	}
+
 	private NodeStatement parseStatement() {
 		NodeStatement statement;
 		switch (curr().kind) {
@@ -209,6 +336,10 @@ final class Parser {
 			}
 			case TokenKind.Const: {
 				statement = parseConstant();
+				break;
+			}
+			case TokenKind.Def: {
+				statement = parseFunction();
 				break;
 			}
 			// Error!

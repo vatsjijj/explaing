@@ -235,6 +235,9 @@ private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 		case "%":
 			tok = Token(TokenKind.Mod, tmp, line, col);
 			break;
+		case ",":
+			tok = Token(TokenKind.Comma, tmp, line, col);
+			break;
 		case "=":
 			if (ctx.isChar('=')) {
 				tmp ~= ctx.currChar();
