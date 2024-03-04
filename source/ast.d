@@ -30,6 +30,8 @@ enum ExpressionKind {
 	Type,
 	Bool,
 	Nil,
+	Call,
+	ExprList,
 }
 
 abstract class Node {
@@ -290,5 +292,29 @@ final class NodeBinOp : NodeExpression {
 		this.lhs = lhs;
 		this.op = op;
 		this.rhs = rhs;
+	}
+}
+
+final class NodeExprList : NodeExpression {
+	private NodeExpression[] exprs;
+
+	this() {
+		super(ExpressionKind.ExprList);
+		this.exprs = [];
+	}
+	this(NodeExpression[] exprs) {
+		super(ExpressionKind.ExprList);
+		this.exprs = exprs;
+	}
+}
+
+final class NodeCall : NodeExpression {
+	private Token ident;
+	private NodeExprList args;
+
+	this(ref Token ident, NodeExprList args) {
+		super(ExpressionKind.Call);
+		this.ident = ident;
+		this.args = args;
 	}
 }

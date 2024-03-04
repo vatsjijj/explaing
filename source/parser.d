@@ -171,6 +171,37 @@ final class Parser {
 		return new NodeConst(ident, type);
 	}
 
+	private NodeExprList parseExprList() {
+		NodeExpression[] exprs;
+		expect(
+			TokenKind.LParen,
+			"Expected a left parenthese."
+		);
+		idx++;
+		if (curr().isKind(TokenKind.RParen)) {
+			idx++;
+			return new NodeExprList();
+		}
+		exprs ~= parseExpression();
+		while (curr().isKind(TokenKind.Comma)) {
+			idx++;
+			exprs ~= parseExpression();
+		}
+		expect(
+			TokenKind.RParen,
+			"Expected a right parenthese."
+		);
+		idx++;
+		return new NodeExprList(exprs);
+	}
+
+	private NodeCall parseCall() {
+		Token ident = curr();
+		idx++;
+		NodeExprList args = parseExprList();
+		return new NodeCall(ident, args);
+	}
+
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression lhs, rhs;
 		Token op;
@@ -188,6 +219,15 @@ final class Parser {
 			}
 			case TokenKind.Bool: {
 				lhs = new NodeBool(curr());
+				idx++;
+				break;
+			}
+			case TokenKind.Identifier: {
+				if (peek().isKind(TokenKind.LParen)) {
+					lhs = parseCall();
+					break;
+				}
+				lhs = new NodeIdentifier(curr());
 				idx++;
 				break;
 			}
