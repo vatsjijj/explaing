@@ -406,6 +406,32 @@ final class Parser {
 		return new NodeClass(ident, block, vis);
 	}
 
+	// TODO: Add notes.
+	private NodeStruct parseStruct(Visibility vis) {
+		idx++;
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		NodeBlock block = parseBlock();
+		return new NodeStruct(ident, block, vis);
+	}
+
+	// TODO: Add notes.
+	private NodeUnion parseUnion(Visibility vis) {
+		idx++;
+		expect(
+			TokenKind.Identifier,
+			"Expected an identifier."
+		);
+		NodeIdentifier ident = new NodeIdentifier(curr());
+		idx++;
+		NodeBlock block = parseBlock();
+		return new NodeUnion(ident, block, vis);
+	}
+
 	private NodeStatement parseStatement() {
 		NodeStatement statement;
 		Visibility vis = Visibility.Protected;
@@ -438,6 +464,13 @@ final class Parser {
 			}
 			case TokenKind.Class: {
 				statement = parseClass(vis);
+				break;
+			}
+			case TokenKind.Struct: {
+				statement = parseStruct(vis);
+				break;
+			}
+			case TokenKind.Union: {
 				break;
 			}
 			// Error!
