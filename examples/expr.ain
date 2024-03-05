@@ -5,3 +5,4 @@ var v4: bool = true;
 var v5: i32 = 10 * 2 / 3 + 4 - 5 % 2;
 var v6: bool = 11 % 2 == 0;
 var v7: const char ptr = "hello";
+var v8: i32[] = [0, 1, 2, 3, 4];

@@ -215,6 +215,30 @@ final class Parser {
 		return new NodeType(type);
 	}
 
+	private NodeArray parseArray() {
+		NodeExpression[] exprs;
+		expect(
+			TokenKind.LBrack,
+			"Expected a left bracket."
+		);
+		idx++;
+		if (curr().isKind(TokenKind.RBrack)) {
+			idx++;
+			return new NodeArray();
+		}
+		exprs ~= parseExpression();
+		while (curr().isKind(TokenKind.Comma)) {
+			idx++;
+			exprs ~= parseExpression();
+		}
+		expect(
+			TokenKind.RBrack,
+			"Expected a right bracket."
+		);
+		idx++;
+		return new NodeArray(exprs);
+	}
+
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression lhs, rhs;
 		Token op;
@@ -259,6 +283,10 @@ final class Parser {
 			case TokenKind.String: {
 				lhs = new NodeString(curr());
 				idx++;
+				break;
+			}
+			case TokenKind.LBrack: {
+				lhs = parseArray();
 				break;
 			}
 			default: {
