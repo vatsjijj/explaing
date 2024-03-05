@@ -228,10 +228,8 @@ private Token doNum(ref Context ctx) {
 }
 
 private void doComment(ref Context ctx) {
-	import std.stdio;
 	if (ctx.isChar('-')) {
 		while (!ctx.isChar('\n')) {
-			writeln(ctx.currChar());
 			ctx.inc();
 		}
 	}
