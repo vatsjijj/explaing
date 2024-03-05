@@ -484,7 +484,7 @@ final class Parser {
 
 	private NodeStatement parseStatement() {
 		NodeStatement statement;
-		Visibility vis = Visibility.Protected;
+		Visibility vis = Visibility.Public;
 		switch (curr().kind) {
 			case TokenKind.Private:
 				vis = Visibility.Private;
