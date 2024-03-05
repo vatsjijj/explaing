@@ -206,7 +206,8 @@ final class Parser {
 		type ~= curr();
 		idx++;
 		while (curr().isKind(
-			TokenKind.Pointer
+			TokenKind.Pointer,
+			TokenKind.LBrack, TokenKind.RBrack
 		)) {
 			type ~= curr();
 			idx++;
