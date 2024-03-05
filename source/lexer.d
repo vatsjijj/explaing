@@ -133,7 +133,7 @@ private Token doIdent(ref Context ctx) {
 		ctx.inc();
 	}
 	switch (tmp) {
-		case "void", "u8", "i8", "i32", "u32", "f32", "bool":
+		case "void", "u8", "i8", "i32", "u32", "f32", "bool", "char":
 			tok = Token(TokenKind.Primitive, tmp, line, col);
 			break;
 		case "if":
