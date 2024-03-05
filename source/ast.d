@@ -38,6 +38,7 @@ enum ExpressionKind {
 	String,
 	This, Super,
 	Array,
+	ArrayAccess,
 }
 
 abstract class Node {
@@ -465,5 +466,16 @@ final class NodeArray : NodeExpression {
 	this(NodeExpression[] content) {
 		super(ExpressionKind.Array);
 		this.content = content;
+	}
+}
+
+final class NodeArrayAccess : NodeExpression {
+	private NodeExpression ident;
+	private NodeExpression expr;
+
+	this(NodeExpression ident, NodeExpression expr) {
+		super(ExpressionKind.ArrayAccess);
+		this.ident = ident;
+		this.expr = expr;
 	}
 }

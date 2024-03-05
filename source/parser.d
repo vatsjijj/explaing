@@ -239,6 +239,21 @@ final class Parser {
 		return new NodeArray(exprs);
 	}
 
+	private NodeArrayAccess parseArrayAccess(NodeExpression expr) {
+		idx++;
+		NodeExpression content = parseExpression();
+		expect(
+			TokenKind.RBrack,
+			"Expected a right bracket."
+		);
+		idx++;
+		if (curr().isKind(TokenKind.LBrack)) {
+			NodeArrayAccess second = parseArrayAccess(new NodeArrayAccess(expr, content));
+			return new NodeArrayAccess(new NodeArrayAccess(expr, content), second);
+		}
+		return new NodeArrayAccess(expr, content);
+	}
+
 	private NodeExpression parseExpression(bool semicolon = false) {
 		NodeExpression lhs, rhs;
 		Token op;
@@ -267,6 +282,12 @@ final class Parser {
 			case TokenKind.Identifier: {
 				if (peek().isKind(TokenKind.LParen)) {
 					lhs = parseCall();
+					break;
+				}
+				else if (peek().isKind(TokenKind.LBrack)) {
+					NodeIdentifier ident = new NodeIdentifier(curr());
+					idx++;
+					lhs = parseArrayAccess(ident);
 					break;
 				}
 				lhs = new NodeIdentifier(curr());
