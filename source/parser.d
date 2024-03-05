@@ -542,6 +542,7 @@ final class Parser {
 		while (!curr().isKind(TokenKind.EOF)) {
 			program.append(parseStatement());
 		}
+		program.append(new NodeEOF(curr()));
 		return program;
 	}
 }

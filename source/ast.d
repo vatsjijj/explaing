@@ -24,6 +24,7 @@ enum StatementKind {
 	Else,
 	While,
 	For,
+	EOF,
 }
 
 enum ExpressionKind {
@@ -63,6 +64,14 @@ final class NodeProgram : Node {
 	void append(NodeStatement node) {
 		this.children ~= node;
 	}
+
+	NodeStatement[] getChildren() {
+		return this.children;
+	}
+
+	bool isEmpty() {
+		return children[0].isKind(StatementKind.EOF);
+	}
 }
 
 abstract class NodeStatement : Node {
@@ -71,6 +80,10 @@ abstract class NodeStatement : Node {
 	this(StatementKind kind) {
 		super(NodeKind.Statement);
 		this.kind = kind;
+	}
+
+	bool isKind(StatementKind kind) {
+		return kind == this.kind;
 	}
 }
 
@@ -331,6 +344,15 @@ final class NodeFor : NodeStatement {
 		this.expr1 = expr1;
 		this.expr2 = expr2;
 		this.block = block;
+	}
+}
+
+final class NodeEOF : NodeStatement {
+	private Token tok;
+
+	this(ref Token tok) {
+		super(StatementKind.EOF);
+		this.tok = tok;
 	}
 }
 
