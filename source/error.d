@@ -108,6 +108,6 @@ class Message {
 			tmp ~= note;
 		}
 		stderr.writeln(tmp);
-		exit(1);
+		if (kind == MessageKind.Error) exit(1);
 	}
 }
