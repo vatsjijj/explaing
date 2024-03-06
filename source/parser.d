@@ -325,7 +325,10 @@ final class Parser {
 			TokenKind.Plus, TokenKind.Dash,
 			TokenKind.Star, TokenKind.FSlash,
 			TokenKind.Mod, TokenKind.DEqu,
-			TokenKind.Dot, TokenKind.Equ
+			TokenKind.Dot, TokenKind.Equ,
+			TokenKind.Greater, TokenKind.Less,
+			TokenKind.GreaterEqu, TokenKind.LessEqu,
+			TokenKind.BangEqu
 		)) {
 			op = curr();
 			idx++;

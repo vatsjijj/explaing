@@ -27,6 +27,9 @@ enum TokenKind {
 	Mod, FSlash, Star,
 	Plus, Dash,
 	Equ, DEqu,
+	Greater, Less,
+	GreaterEqu, LessEqu,
+	BangEqu,
 	// Symbols
 	LParen, RParen,
 	LBrace, RBrace,
@@ -314,6 +317,21 @@ private Token doOther(ref Context ctx, ref GlobalContext gCtx) {
 				break;
 			}
 			tok = Token(TokenKind.Equ, tmp, line, col);
+			break;
+		case "<":
+			tok = Token(TokenKind.Greater, tmp, line, col);
+			break;
+		case ">":
+			tok = Token(TokenKind.Less, tmp, line, col);
+			break;
+		case "<=":
+			tok = Token(TokenKind.GreaterEqu, tmp, line, col);
+			break;
+		case ">=":
+			tok = Token(TokenKind.LessEqu, tmp, line, col);
+			break;
+		case "!=":
+			tok = Token(TokenKind.BangEqu, tmp, line, col);
 			break;
 		default: {
 			tok = Token(TokenKind.Err, tmp, line, col);
