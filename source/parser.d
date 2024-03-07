@@ -163,7 +163,7 @@ final class Parser {
 		NodeExpression[] exprs;
 		expect(
 			TokenKind.LParen,
-			"Expected a left parenthese."
+			"Expected a left parenthesis."
 		);
 		idx++;
 		if (curr().isKind(TokenKind.RParen)) {
@@ -177,7 +177,7 @@ final class Parser {
 		}
 		expect(
 			TokenKind.RParen,
-			"Expected a right parenthese."
+			"Expected a right parenthesis."
 		);
 		idx++;
 		return new NodeExprList(exprs);
@@ -368,7 +368,7 @@ final class Parser {
 		NodeArg[] args;
 		expect(
 			TokenKind.LParen,
-			"Expected a left parenthese."
+			"Expected a left parenthesis."
 		);
 		idx++;
 		if (curr().isKind(TokenKind.RParen)) {
@@ -382,7 +382,7 @@ final class Parser {
 		}
 		expect(
 			TokenKind.RParen,
-			"Expected a right parenthese."
+			"Expected a right parenthesis."
 		);
 		idx++;
 		return new NodeArgList(args);
