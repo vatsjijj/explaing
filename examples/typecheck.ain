@@ -1,0 +1,2 @@
+-- Typechecking testing.
+var v1: i32 = 10;

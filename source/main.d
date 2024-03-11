@@ -5,6 +5,7 @@ import error;
 import lexer;
 import context;
 import parser;
+import symbol;
 
 int main(string[] args) {
 	if (args.length < 2) {
@@ -25,7 +26,9 @@ int main(string[] args) {
 		gCtx.toks = toks;
 
 		Parser p = new Parser(gCtx);
-		p.parse();
+		auto tree = p.parse();
+		Resolver res = new Resolver(gCtx, tree);
+		res.resolve();
 	}
 	catch (Exception e) {
 		stderr.writeln(e.message);

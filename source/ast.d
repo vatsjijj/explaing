@@ -85,6 +85,10 @@ abstract class NodeStatement : Node {
 	bool isKind(StatementKind kind) {
 		return kind == this.kind;
 	}
+
+	ref StatementKind getKind() {
+		return this.kind;
+	}
 }
 
 enum Visibility {
@@ -249,6 +253,10 @@ final class NodeVar : NodeStatement {
 		this.initialized = true;
 		this.vis = vis;
 	}
+
+	ref NodeIdentifier getIdent() {
+		return this.ident;
+	}
 }
 
 final class NodeConst : NodeStatement {
@@ -354,6 +362,10 @@ final class NodeEOF : NodeStatement {
 		super(StatementKind.EOF);
 		this.tok = tok;
 	}
+
+	ref Token getTok() {
+		return this.tok;
+	}
 }
 
 abstract class NodeExpression : Node {
@@ -392,6 +404,10 @@ final class NodeIdentifier : NodeExpression {
 	this(ref Token ident) {
 		super(ExpressionKind.Identifier);
 		this.ident = ident;
+	}
+
+	ref Token getTok() {
+		return this.ident;
 	}
 }
 
