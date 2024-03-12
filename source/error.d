@@ -73,6 +73,10 @@ class Message {
 		}
 	}
 
+	ulong getLine() {
+		return this.tok.line;
+	}
+
 	void display(ref GlobalContext gCtx) {
 		import std.conv : to;
 		ulong len = to!string(tok.line).length + 2;

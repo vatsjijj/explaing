@@ -6,6 +6,7 @@ import lexer;
 import context;
 import parser;
 import symbol;
+import analysis;
 
 int main(string[] args) {
 	if (args.length < 2) {
@@ -29,6 +30,8 @@ int main(string[] args) {
 		auto tree = p.parse();
 		Resolver res = new Resolver(gCtx, tree);
 		res.resolve();
+		Analyzer sema = new Analyzer(gCtx, res);
+		sema.analyze();
 	}
 	catch (Exception e) {
 		stderr.writeln(e.message);

@@ -257,6 +257,14 @@ final class NodeVar : NodeStatement {
 	ref NodeIdentifier getIdent() {
 		return this.ident;
 	}
+
+	bool isUsed() {
+		return this.used;
+	}
+
+	bool isInitialized() {
+		return this.initialized;
+	}
 }
 
 final class NodeConst : NodeStatement {
@@ -296,6 +304,18 @@ final class NodeConst : NodeStatement {
 		this.val = val;
 		this.initialized = true;
 		this.vis = vis;
+	}
+
+	ref NodeIdentifier getIdent() {
+		return this.ident;
+	}
+
+	bool isUsed() {
+		return this.used;
+	}
+
+	bool isInitialized() {
+		return this.initialized;
 	}
 }
 

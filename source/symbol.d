@@ -24,6 +24,9 @@ struct Scope {
 	bool exists(ref NodeVar var) {
 		return (var.getIdent().getTok().content in vars) !is null;
 	}
+	bool exists(ref NodeConst cnst) {
+		return (cnst.getIdent().getTok().content in consts) !is null;
+	}
 
 	ubyte where(string key) {
 		if (key in vars)   return 0;
@@ -45,9 +48,24 @@ struct Scope {
 		);
 		msg.display(gCtx);
 	}
+	void check(NodeConst cnst, GlobalContext gCtx) {
+		if (!exists(cnst)) {
+			return;
+		}
+		Message msg = new Message(
+			MessageKind.Error,
+			"Symbol has been previously defined.",
+			"Make sure there isn't another symbol of the same name.",
+			cnst.getIdent().getTok()
+		);
+		msg.display(gCtx);
+	}
 
 	void set(NodeVar var) {
 		vars[var.getIdent().getTok().content] = var;
+	}
+	void set(NodeConst cnst) {
+		consts[cnst.getIdent().getTok().content] = cnst;
 	}
 }
 
@@ -119,12 +137,25 @@ class Resolver {
 		scopes[blocks[$ - 1]].set(var);
 	}
 
+	private void resolveConst(NodeConst cnst) {
+		if (inGlobalScope()) {
+			globalScope.check(cnst, gCtx);
+			globalScope.set(cnst);
+			return;
+		}
+		scopes[blocks[$ - 1]].check(cnst, gCtx);
+		scopes[blocks[$ - 1]].set(cnst);
+	}
+
 	private void resolveProgram() {
 		foreach (statement; prog.getChildren()) {
 			switch (statement.getKind()) {
 				case StatementKind.Var:
 					resolveVar(cast(NodeVar)statement);
 					break;
+				case StatementKind.Const: {
+					break;
+				}
 				case StatementKind.EOF: break;
 				default: {
 					stderr.writeln("Compiler error in " ~ gCtx.filename ~ ":");
